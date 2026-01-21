@@ -20,10 +20,29 @@ const products = [
     name: 'Doodle Duel',
     description: "The ultimate AI-powered drawing game. Challenge friends, doodle fast, and let AI judge your artistic skills in real-time battles.",
     platforms: ['web'],
-    logo: '/doodleduel.png',
     featured: true,
+    logo: '/doodleduel.png',
     links: {
       website: 'https://doodleduel.ai'
+    }
+  },
+  {
+    name: 'FlickPicker',
+    description: "Find perfect movies and shows. Get personalized recommendations or create watch parties with friends.",
+    platforms: ['web'],
+    featured: true,
+    logo: '/flickpicker.png',
+    links: {
+      website: 'https://theflickpicker.com'
+    }
+  },
+  {
+    name: 'Recurroo',
+    description: "The smartest way to manage all your subscriptions in one place. Get powerful insights, timely reminders, and money-saving tools.",
+    platforms: ['ios'],
+    logo: '/recurroo.png',
+    links: {
+      ios: 'https://apps.apple.com/us/app/recurroo-track-subscriptions/id6743495252'
     }
   },
   {
@@ -32,18 +51,17 @@ const products = [
     platforms: ['android'],
     logo: '/snap-search.jpg',
     links: {
-      android: 'https://play.google.com/store/apps/details?id=com.nicholasrusso.snapsearch',
-      website: '#'
+      android: 'https://play.google.com/store/apps/details?id=cybersky.snapsearch',
+      website: 'https://snapsearch.online'
     }
   },
   {
     name: 'Sum',
     description: "A fast-paced number game. Find the sum of numbers on a 3x3 grid before time runs out.",
-    platforms: ['android', 'ios'],
+    platforms: ['ios'],
     logo: '/sum.jpg',
     links: {
-      android: '#',
-      ios: '#'
+      ios: 'https://apps.apple.com/us/app/sum-simple-math-puzzle/id6450458099'
     }
   },
   {
@@ -52,7 +70,7 @@ const products = [
     platforms: ['web'],
     logo: '/ai-diary.png',
     links: {
-      website: '#'
+      website: 'https://aidiary.io'
     }
   },
   {
@@ -61,7 +79,7 @@ const products = [
     platforms: ['ios'],
     logo: '/manifest-ai.jpg',
     links: {
-      ios: '#'
+      ios: 'https://apps.apple.com/us/app/manifest-ai-affirmations/id6739225578'
     }
   },
   {
@@ -70,18 +88,9 @@ const products = [
     platforms: ['mac'],
     logo: '/snapapi.jpg',
     links: {
-      mac: '#'
+      mac: 'https://apps.apple.com/us/app/snapapi-quick-api-menu-bar/id1668117899?mt=12'
     }
   },
-  {
-    name: 'FlickPicker',
-    description: "Find perfect movies and shows. Get personalized recommendations or create watch parties with friends.",
-    platforms: ['web'],
-    logo: '/flickpicker.png',
-    links: {
-      website: '#'
-    }
-  }
 ]
 
 const stats = [
@@ -130,6 +139,12 @@ function PlatformIcon({ platform, size = 16 }) {
   }
 }
 
+function getProductLink(product, platform) {
+  // Map platform to link key (web -> website)
+  const linkKey = platform === 'web' ? 'website' : platform
+  return product.links[linkKey] || product.links.website || '#'
+}
+
 function ProductCard({ product, index }) {
   return (
     <motion.div
@@ -163,18 +178,21 @@ function ProductCard({ product, index }) {
       </div>
       
       <div className="product-links">
-        {product.platforms.map(platform => (
-          <a 
-            key={platform} 
-            href={product.links[platform] || product.links.website || '#'} 
-            className="product-link"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <PlatformIcon platform={platform} size={14} />
-            {platform === 'web' ? 'Visit' : 'Download'}
-          </a>
-        ))}
+        {product.platforms.map(platform => {
+          const href = getProductLink(product, platform)
+          return (
+            <a 
+              key={platform} 
+              href={href}
+              className="product-link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <PlatformIcon platform={platform} size={14} />
+              {platform === 'web' ? 'Visit' : 'Download'}
+            </a>
+          )
+        })}
       </div>
     </motion.div>
   )
