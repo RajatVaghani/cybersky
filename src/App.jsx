@@ -315,19 +315,15 @@ function App() {
           <p>We respond within 24 hours, even on weekends.</p>
           
           <div className="social-links">
-            <a href="https://x.com" target="_blank" rel="noopener noreferrer" className="social-link">
+            <a href="https://twitter.com/Rajat_Vaghani" target="_blank" rel="noopener noreferrer" className="social-link">
               <Twitter size={18} />
               <span>Twitter</span>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" className="social-link">
+            <a href="https://www.linkedin.com/in/rajatvaghani" target="_blank" rel="noopener noreferrer" className="social-link">
               <Linkedin size={18} />
               <span>LinkedIn</span>
             </a>
-            <a href="#" className="social-link">
-              <MessageCircle size={18} />
-              <span>Signal</span>
-            </a>
-            <a href="mailto:hello@cybersky.dev" className="social-link">
+            <a href="mailto:rajat@thecybersky.com" className="social-link">
               <Mail size={18} />
               <span>Email</span>
             </a>
