@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#FAFAFA">
+  <meta name="supported-color-schemes" content="light only">
   <title>Save the Date · Dhwani &amp; Rajat</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,6 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
   <style>
+    :root { color-scheme: light only; }
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
@@ -811,6 +815,7 @@
     function doScratch({ x, y }) {
       if (!scratchStarted) {
         scratchStarted = true;
+        startMusic();
       }
 
       if (goldGone) {
@@ -1004,11 +1009,19 @@
     function startMusic() {
       if (musicStarted) return;
       musicStarted = true;
-      bgMusic.play().catch(() => {});
+      bgMusic.load();
+      const p = bgMusic.play();
+      if (p && p.catch) p.catch(() => {
+        musicStarted = false;
+      });
     }
 
-    document.addEventListener('touchstart', startMusic, { once: true });
-    document.addEventListener('mousedown', startMusic, { once: true });
+    function tryStartMusic() { startMusic(); }
+
+    document.addEventListener('touchstart', tryStartMusic, { passive: true });
+    document.addEventListener('touchend', tryStartMusic, { passive: true });
+    document.addEventListener('mousedown', tryStartMusic);
+    document.addEventListener('click', tryStartMusic);
 
     musicBtn.addEventListener('click', (e) => {
       e.stopPropagation();
