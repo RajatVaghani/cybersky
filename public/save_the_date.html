@@ -327,13 +327,13 @@
         ">28.11.2026</span>
         <span style="
           font-family:'Cormorant Garamond',serif;
-          font-weight:700;
+          font-weight:600;
           font-size:clamp(0.62rem,2.4vw,0.78rem);
-          letter-spacing:0.4em;
+          letter-spacing:0.35em;
           text-transform:uppercase;
           color:rgba(120,100,100,0.5);
           margin-top:5px;
-        ">save the date</span>
+        ">Kolkata, India</span>
       </div>
 
       <!-- Canvas layers clipped to heart -->
@@ -789,7 +789,6 @@
     function doScratch({ x, y }) {
       if (!scratchStarted) {
         scratchStarted = true;
-        gsap.to('#hint', { opacity: 0, height: 0, marginTop: 0, duration: 0.35 });
       }
 
       if (goldGone) {
@@ -845,6 +844,11 @@
         ctxS.clearRect(0, 0, SZ, SZ);
         cS.style.pointerEvents = 'none';
         document.getElementById('dateText').style.zIndex = '2';
+        const hint = document.getElementById('hint');
+        gsap.to(hint, { opacity: 0, duration: 0.3, onComplete: () => {
+          hint.textContent = 'Swipe to fill our hearts with your blessings & love';
+          gsap.to(hint, { opacity: 1, duration: 0.5 });
+        }});
       }
     }
 
