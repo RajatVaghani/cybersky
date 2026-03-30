@@ -389,8 +389,11 @@
       <button class="m-row" onclick="gcal()">
         <span class="ic">📅</span><span>Google Calendar</span>
       </button>
-      <button class="m-row" onclick="dlIcs()">
-        <span class="ic">📱</span><span>Apple / Download (.ics)</span>
+      <button class="m-row" onclick="appleCal()">
+        <span class="ic">🗓️</span><span>Apple Calendar</span>
+      </button>
+      <button class="m-row" onclick="outlookCal()">
+        <span class="ic">📧</span><span>Outlook Calendar</span>
       </button>
       <div class="m-close" onclick="closeM()">close</div>
     </div>
@@ -931,8 +934,18 @@
     document.addEventListener('touchend', () => { down = false; lx = ly = 0; });
 
     document.getElementById('calBtn').addEventListener('click', () => {
-      document.getElementById('mBg').classList.add('open');
-      setTimeout(() => document.getElementById('mBox').classList.add('open'), 12);
+      const ua = navigator.userAgent || '';
+      const isIOS = /iPhone|iPad|iPod/i.test(ua);
+      const isAndroid = /Android/i.test(ua);
+
+      if (isIOS) {
+        appleCal();
+      } else if (isAndroid) {
+        gcal();
+      } else {
+        document.getElementById('mBg').classList.add('open');
+        setTimeout(() => document.getElementById('mBox').classList.add('open'), 12);
+      }
     });
 
     /* ── Calendar ── */
@@ -940,30 +953,50 @@
       document.getElementById('mBox').classList.remove('open');
       setTimeout(() => document.getElementById('mBg').classList.remove('open'), 330);
     };
+
+    const ICS_CONTENT = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Dhwani & Rajat//Wedding//EN',
+      'BEGIN:VEVENT',
+      'DTSTART;VALUE=DATE:20261128',
+      'DTEND;VALUE=DATE:20261129',
+      'SUMMARY:Dhwani & Rajat - Wedding',
+      'DESCRIPTION:Save the Date ✦ 28 November 2026 ✦ Kolkata\\, India',
+      'LOCATION:Kolkata\\, India',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
     window.gcal = function() {
       window.open(
         'https://calendar.google.com/calendar/render?action=TEMPLATE'
         + '&text=Dhwani+%26+Rajat+Wedding'
         + '&dates=20261128%2F20261129'
-        + '&details=Save+the+Date+%E2%9C%A6+28+November+2026',
+        + '&details=Save+the+Date+%E2%9C%A6+28+November+2026+%E2%9C%A6+Kolkata%2C+India'
+        + '&location=Kolkata%2C+India',
         '_blank'
       ); closeM();
     };
-    window.dlIcs = function() {
-      const lines = [
-        'BEGIN:VCALENDAR','VERSION:2.0',
-        'PRODID:-//Dhwani & Rajat//Wedding//EN',
-        'BEGIN:VEVENT','DTSTART;VALUE=DATE:20261128',
-        'DTEND;VALUE=DATE:20261129',
-        'SUMMARY:Dhwani & Rajat - Wedding Day',
-        'DESCRIPTION:Save the Date - 28 November 2026.',
-        'END:VEVENT','END:VCALENDAR'
-      ];
-      const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar' });
-      const a = Object.assign(document.createElement('a'), {
-        href: URL.createObjectURL(blob), download: 'dhwani-rajat-28-11-2026.ics'
-      });
-      a.click(); URL.revokeObjectURL(a.href); closeM();
+
+    window.appleCal = function() {
+      const blob = new Blob([ICS_CONTENT], { type: 'text/calendar' });
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_self');
+      setTimeout(() => URL.revokeObjectURL(url), 3000);
+      closeM();
+    };
+
+    window.outlookCal = function() {
+      window.open(
+        'https://outlook.live.com/calendar/0/action/compose?allday=true'
+        + '&subject=Dhwani+%26+Rajat+Wedding'
+        + '&startdt=2026-11-28'
+        + '&enddt=2026-11-29'
+        + '&body=Save+the+Date+%E2%9C%A6+28+November+2026+%E2%9C%A6+Kolkata%2C+India'
+        + '&location=Kolkata%2C+India',
+        '_blank'
+      ); closeM();
     };
 
     /* ── GSAP entrance ── */
