@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Save the Date · Dhwani &amp; Rajat</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Alex+Brush&family=Cormorant:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      background: #FAFAFA;
+      min-height: 100dvh;
+      font-family: 'Cormorant Garamond', serif;
+    }
+
+    .petals { position: fixed; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+    .petal {
+      position: absolute;
+      border-radius: 50% 5% 50% 5%;
+      opacity: 0;
+      will-change: transform, opacity;
+      animation: petalFall linear infinite;
+    }
+    @keyframes petalFall {
+      0%   { opacity: 0;   transform: translateY(-30px) rotate(0deg) translateX(0); }
+      7%   { opacity: 0.45; }
+      88%  { opacity: 0.18; }
+      100% { opacity: 0;   transform: translateY(110dvh) rotate(520deg) translateX(30px); }
+    }
+
+    .page {
+      position: relative; z-index: 3;
+      width: 100%; height: 100dvh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 0 24px;
+    }
+
+    /* ── "Save the Date" — mixed typography ── */
+    .save-line {
+      display: flex;
+      align-items: baseline;
+      gap: 0.28em;
+      margin-bottom: 20px;
+      line-height: 1;
+    }
+    .save-line .word {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      font-style: normal;
+      font-size: clamp(2.15rem, 8.5vw, 3.4rem);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: #888;
+    }
+    .save-line .the {
+      font-family: 'Alex Brush', cursive;
+      font-weight: 400;
+      font-size: clamp(2.7rem, 10.5vw, 4.2rem);
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: #999;
+      position: relative;
+      top: 0.04em;
+    }
+
+    /* ── Heart zone ── */
+    .heart-zone {
+      position: relative;
+      width:  min(310px, 72vw, 44vh);
+      height: min(310px, 72vw, 44vh);
+      flex-shrink: 0;
+      margin: 0;
+    }
+
+    /* Embossed heart — pressed INTO the page, same bg color */
+    .heart-emboss {
+      position: absolute; inset: 0;
+      pointer-events: none;
+    }
+    .heart-emboss svg { width: 100%; height: 100%; }
+
+    /* Canvas layers clipped to heart */
+    .canvas-wrap {
+      position: absolute; inset: 0;
+      clip-path: url(#heartClip);
+      -webkit-clip-path: url(#heartClip);
+      z-index: 1;
+    }
+
+    #cBase, #cRedFill, #cScratch, #cSparkle {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      touch-action: none; user-select: none;
+    }
+    #cRedFill, #cSparkle { pointer-events: none; }
+
+    /* Fullscreen particle canvas */
+    #cParticles {
+      position: fixed; inset: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* ── Names ── */
+    .names {
+      display: flex;
+      align-items: baseline;
+      gap: 0.22em;
+      margin-top: 22px;
+      line-height: 1;
+    }
+    .names .n {
+      font-family: 'Cormorant', serif;
+      font-weight: 300;
+      font-size: clamp(1.55rem, 6.8vw, 2.3rem);
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #777;
+      margin-right: -0.12em;
+    }
+    .names .weds {
+      font-family: 'Alex Brush', cursive;
+      font-weight: 400;
+      font-size: clamp(2.05rem, 8.5vw, 3rem);
+      letter-spacing: 0.02em;
+      text-transform: none;
+      color: #999;
+    }
+
+    /* ── Hint ── */
+    .hint {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(1.18rem, 4.6vw, 1.42rem);
+      color: rgba(80,58,58,0.88);
+      letter-spacing: 0.14em;
+      text-align: center;
+      margin-top: 18px;
+    }
+
+    /* ── Calendar button — fixed at bottom, no layout shift ── */
+    .cal-btn {
+      display: none;
+      position: fixed;
+      bottom: max(28px, env(safe-area-inset-bottom, 28px));
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 60;
+      padding: 14px 44px;
+      background: linear-gradient(135deg, #D4A520 0%, #B8860B 50%, #D4A520 100%);
+      color: #fff;
+      border: none; border-radius: 50px;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 500;
+      font-size: clamp(0.86rem, 3.2vw, 1rem);
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(180,130,20,0.25);
+    }
+    .cal-btn:active { transform: translateX(-50%) scale(0.97); }
+
+    /* ── Modal ── */
+    .modal-bg {
+      display: none; position: fixed; inset: 0; z-index: 100;
+      background: rgba(0,0,0,0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      align-items: center; justify-content: center;
+    }
+    .modal-bg.open { display: flex; }
+    .modal {
+      background: #FAFAFA;
+      border-radius: 20px;
+      padding: 28px 22px;
+      width: min(290px, 88vw);
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+      transform: scale(0.9) translateY(16px);
+      opacity: 0;
+      transition: all 0.34s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .modal.open { transform: scale(1) translateY(0); opacity: 1; }
+    .modal h3 {
+      font-family: 'Pinyon Script', cursive;
+      font-size: 1.8rem; color: #888;
+      margin-bottom: 16px;
+    }
+    .m-row {
+      display: flex; align-items: center; gap: 12px;
+      width: 100%; padding: 13px 14px; margin: 6px 0;
+      border: 1px solid rgba(180,160,140,0.25);
+      border-radius: 12px; background: white;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1rem; color: #777;
+      cursor: pointer; text-align: left;
+      transition: background 0.18s;
+    }
+    .m-row:active { background: #F5F2EF; }
+    .m-row .ic { font-size: 1.15rem; }
+    .m-close {
+      margin-top: 14px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic; font-weight: 300;
+      font-size: 0.82rem;
+      color: rgba(140,120,120,0.45);
+      cursor: pointer;
+      letter-spacing: 0.04em;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- SVG definitions -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <!-- Heart clip path -->
+      <clipPath id="heartClip" clipPathUnits="objectBoundingBox">
+        <path d="M0.5,0.915 C0.5,0.915 0.035,0.62 0.035,0.355
+                 C0.035,0.155 0.175,0.045 0.345,0.115
+                 C0.415,0.148 0.465,0.218 0.5,0.295
+                 C0.535,0.218 0.585,0.148 0.655,0.115
+                 C0.825,0.045 0.965,0.155 0.965,0.355
+                 C0.965,0.62 0.5,0.915 0.5,0.915Z"/>
+      </clipPath>
+
+      <!-- Emboss filter: purely inset, no outer shadow -->
+      <filter id="emboss" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+        <!-- Inner dark shadow (top-left light source → shadow falls inside at bottom-right) -->
+        <feOffset in="SourceGraphic" dx="3" dy="4" result="shifted"/>
+        <feComposite in="SourceGraphic" in2="shifted" operator="out" result="innerEdge"/>
+        <feGaussianBlur in="innerEdge" stdDeviation="3.5" result="blurredEdge"/>
+        <feComposite in="blurredEdge" in2="SourceGraphic" operator="in" result="darkInner"/>
+        <feComponentTransfer in="darkInner" result="darkShadow">
+          <feFuncR type="linear" slope="0" intercept="0"/>
+          <feFuncG type="linear" slope="0" intercept="0"/>
+          <feFuncB type="linear" slope="0" intercept="0"/>
+          <feFuncA type="linear" slope="0.35" intercept="0"/>
+        </feComponentTransfer>
+
+        <!-- Inner light highlight (opposite corner) -->
+        <feOffset in="SourceGraphic" dx="-3" dy="-3" result="shiftedL"/>
+        <feComposite in="SourceGraphic" in2="shiftedL" operator="out" result="innerEdgeL"/>
+        <feGaussianBlur in="innerEdgeL" stdDeviation="2.5" result="blurredEdgeL"/>
+        <feComposite in="blurredEdgeL" in2="SourceGraphic" operator="in" result="lightInner"/>
+        <feComponentTransfer in="lightInner" result="lightHighlight">
+          <feFuncR type="linear" slope="0" intercept="1"/>
+          <feFuncG type="linear" slope="0" intercept="1"/>
+          <feFuncB type="linear" slope="0" intercept="1"/>
+          <feFuncA type="linear" slope="0.6" intercept="0"/>
+        </feComponentTransfer>
+
+        <!-- Combine: base shape + dark inset + light inset -->
+        <feMerge>
+          <feMergeNode in="SourceGraphic"/>
+          <feMergeNode in="darkShadow"/>
+          <feMergeNode in="lightHighlight"/>
+        </feMerge>
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="petals" id="petals"></div>
+  <canvas id="cParticles"></canvas>
+
+  <main class="page">
+    <div class="save-line" id="sl">
+      <span class="word">Save</span>
+      <span class="the">the</span>
+      <span class="word">Date</span>
+    </div>
+
+    <div class="heart-zone" id="hz">
+      <!-- Embossed heart (page-colored, pressed in) -->
+      <div class="heart-emboss" id="heartEmboss">
+        <svg viewBox="0 0 260 260" style="overflow:visible">
+          <path d="M130,237.9 C130,237.9 9.1,161.2 9.1,92.3
+                   C9.1,40.3 45.5,11.7 89.7,29.9
+                   C107.9,38.5 120.9,56.7 130,76.7
+                   C139.1,56.7 152.1,38.5 170.3,29.9
+                   C214.5,11.7 250.9,40.3 250.9,92.3
+                   C250.9,161.2 130,237.9 130,237.9Z"
+                fill="#F3F1F1" filter="url(#emboss)"/>
+        </svg>
+      </div>
+
+      <!-- Date text (always visible, revealed by scratching gold away) -->
+      <div id="dateText" style="
+        position:absolute; inset:0;
+        display:flex; flex-direction:column;
+        align-items:center; justify-content:center;
+        pointer-events:none;
+        padding-bottom:6%;
+      ">
+        <span style="
+          font-family:'Cormorant Garamond',serif;
+          font-style:italic; font-weight:600;
+          font-size:clamp(0.68rem,2.6vw,0.85rem);
+          letter-spacing:0.25em;
+          text-transform:uppercase;
+          color:rgba(120,100,100,0.55);
+          margin-bottom:4px;
+        ">invite you to celebrate</span>
+        <span style="
+          font-family:'Cormorant Garamond',serif;
+          font-weight:600;
+          font-size:clamp(2.2rem,9.5vw,3.2rem);
+          letter-spacing:0.12em;
+          color:#777;
+          line-height:1.1;
+        ">28.11.2026</span>
+        <span style="
+          font-family:'Cormorant Garamond',serif;
+          font-weight:700;
+          font-size:clamp(0.62rem,2.4vw,0.78rem);
+          letter-spacing:0.4em;
+          text-transform:uppercase;
+          color:rgba(120,100,100,0.5);
+          margin-top:5px;
+        ">save the date</span>
+      </div>
+
+      <!-- Canvas layers clipped to heart -->
+      <div class="canvas-wrap">
+        <canvas id="cBase"></canvas>
+        <canvas id="cRedFill"></canvas>
+        <canvas id="cScratch"></canvas>
+        <canvas id="cSparkle"></canvas>
+      </div>
+    </div>
+
+    <div class="names" id="nm">
+      <span class="n">Dhwani</span>
+      <span class="weds">weds</span>
+      <span class="n">Rajat</span>
+    </div>
+
+    <p class="hint" id="hint">Scratch the gold to reveal the surprise</p>
+
+    <button class="cal-btn" id="calBtn">Add to Calendar</button>
+  </main>
+
+  <!-- Calendar modal -->
+  <div class="modal-bg" id="mBg" onclick="if(event.target===this)closeM()">
+    <div class="modal" id="mBox">
+      <h3>Add to Calendar</h3>
+      <button class="m-row" onclick="gcal()">
+        <span class="ic">📅</span><span>Google Calendar</span>
+      </button>
+      <button class="m-row" onclick="dlIcs()">
+        <span class="ic">📱</span><span>Apple / Download (.ics)</span>
+      </button>
+      <div class="m-close" onclick="closeM()">close</div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    'use strict';
+
+    const SZ        = 520;
+    const BRUSH     = 32;
+    const THRESHOLD = 0.82;
+
+    const cB  = document.getElementById('cBase');
+    const cR  = document.getElementById('cRedFill');
+    const cS  = document.getElementById('cScratch');
+    const cSp = document.getElementById('cSparkle');
+    const cP  = document.getElementById('cParticles');
+
+    cB.width = cB.height = cR.width = cR.height = cS.width = cS.height = cSp.width = cSp.height = SZ;
+    cP.width  = window.innerWidth;
+    cP.height = window.innerHeight;
+
+    const ctxB  = cB.getContext('2d');
+    const ctxR  = cR.getContext('2d');
+    const ctxS  = cS.getContext('2d', { willReadFrequently: true });
+    const ctxSp = cSp.getContext('2d');
+    const ctxP  = cP.getContext('2d');
+
+    window.addEventListener('resize', () => {
+      cP.width  = window.innerWidth;
+      cP.height = window.innerHeight;
+    });
+
+    /* ── Heart path matching the clip ── */
+    function heartPath(ctx) {
+      const s = SZ;
+      ctx.beginPath();
+      ctx.moveTo(s*0.5, s*0.915);
+      ctx.bezierCurveTo(s*0.5,s*0.915, s*0.035,s*0.62, s*0.035,s*0.355);
+      ctx.bezierCurveTo(s*0.035,s*0.155, s*0.175,s*0.045, s*0.345,s*0.115);
+      ctx.bezierCurveTo(s*0.415,s*0.148, s*0.465,s*0.218, s*0.5,s*0.295);
+      ctx.bezierCurveTo(s*0.535,s*0.218, s*0.585,s*0.148, s*0.655,s*0.115);
+      ctx.bezierCurveTo(s*0.825,s*0.045, s*0.965,s*0.155, s*0.965,s*0.355);
+      ctx.bezierCurveTo(s*0.965,s*0.62, s*0.5,s*0.915, s*0.5,s*0.915);
+      ctx.closePath();
+    }
+
+    /* ── Base canvas is invisible (embossed heart is behind in HTML) ── */
+    function drawBase() {
+      ctxB.clearRect(0, 0, SZ, SZ);
+    }
+
+    /* ── Generate realistic gold glitter texture ── */
+    let glitterTexture = null;
+
+    function generateGlitterTexture() {
+      const tc = document.createElement('canvas');
+      const T = SZ;
+      tc.width = tc.height = T;
+      const tx = tc.getContext('2d');
+
+      // Base: warm gold gradient
+      const bg = tx.createLinearGradient(0, 0, T, T);
+      bg.addColorStop(0,    '#C8A832');
+      bg.addColorStop(0.15, '#DFC048');
+      bg.addColorStop(0.35, '#B89828');
+      bg.addColorStop(0.5,  '#E0C850');
+      bg.addColorStop(0.65, '#A88818');
+      bg.addColorStop(0.8,  '#D0B838');
+      bg.addColorStop(1,    '#B89020');
+      tx.fillStyle = bg;
+      tx.fillRect(0, 0, T, T);
+
+      // Per-pixel noise for granular glitter feel
+      const imgData = tx.getImageData(0, 0, T, T);
+      const d = imgData.data;
+      for (let i = 0; i < d.length; i += 4) {
+        const n = (Math.random() - 0.5) * 90;
+        d[i]     = Math.min(255, Math.max(0, d[i]     + n));
+        d[i + 1] = Math.min(255, Math.max(0, d[i + 1] + n * 0.82));
+        d[i + 2] = Math.min(255, Math.max(0, d[i + 2] + n * 0.25));
+      }
+      tx.putImageData(imgData, 0, 0);
+
+      // Tiny bright specular highlights
+      for (let i = 0; i < 900; i++) {
+        const x = Math.random() * T;
+        const y = Math.random() * T;
+        const r = Math.random() * 1.8 + 0.3;
+        const lum = Math.random();
+        tx.beginPath(); tx.arc(x, y, r, 0, Math.PI * 2);
+        if (lum > 0.85) {
+          tx.fillStyle = `rgba(255,255,235,${0.6 + Math.random() * 0.4})`;
+        } else if (lum > 0.5) {
+          tx.fillStyle = `rgba(255,230,140,${0.4 + Math.random() * 0.4})`;
+        } else {
+          tx.fillStyle = `rgba(160,120,30,${0.3 + Math.random() * 0.4})`;
+        }
+        tx.fill();
+      }
+
+      // Larger bright specks
+      for (let i = 0; i < 120; i++) {
+        const x = Math.random() * T;
+        const y = Math.random() * T;
+        const r = 0.8 + Math.random() * 1.5;
+        tx.beginPath(); tx.arc(x, y, r, 0, Math.PI * 2);
+        tx.fillStyle = `rgba(255,252,230,${0.55 + Math.random() * 0.45})`;
+        tx.fill();
+      }
+
+      // Diagonal shimmer band
+      const sh = tx.createLinearGradient(0, 0, T * 0.6, T * 0.6);
+      sh.addColorStop(0,   'rgba(255,250,200,0)');
+      sh.addColorStop(0.4, 'rgba(255,250,210,0.14)');
+      sh.addColorStop(0.6, 'rgba(255,250,210,0.14)');
+      sh.addColorStop(1,   'rgba(255,250,200,0)');
+      tx.fillStyle = sh;
+      tx.fillRect(0, 0, T, T);
+
+      glitterTexture = tc;
+    }
+
+    /* ── Draw gold layer (scratch overlay) ── */
+    let origAlpha = null, heartPxCount = 0;
+    let goldSnapshot = null;
+
+    function drawGold() {
+      ctxS.clearRect(0, 0, SZ, SZ);
+      ctxS.save();
+      heartPath(ctxS); ctxS.clip();
+      ctxS.drawImage(glitterTexture, 0, 0, SZ, SZ);
+      ctxS.restore();
+
+      // Snapshot for threshold
+      const d = ctxS.getImageData(0, 0, SZ, SZ).data;
+      origAlpha = new Uint8Array(SZ * SZ);
+      heartPxCount = 0;
+      for (let i = 0; i < SZ * SZ; i++) {
+        origAlpha[i] = d[i * 4 + 3];
+        if (origAlpha[i] > 8) heartPxCount++;
+      }
+
+      goldSnapshot = ctxS.getImageData(0, 0, SZ, SZ);
+      initSparkles();
+    }
+
+    /* ── Animated sparkle overlay (separate canvas, no conflict with scratch) ── */
+    const sparkles = [];
+    let sparkleRAF = null;
+
+    function initSparkles() {
+      sparkles.length = 0;
+      for (let i = 0; i < 65; i++) {
+        let sx, sy, tries = 0;
+        do {
+          sx = Math.random() * SZ;
+          sy = Math.random() * SZ;
+          tries++;
+        } while (tries < 50 && origAlpha[Math.floor(sy) * SZ + Math.floor(sx)] < 8);
+
+        sparkles.push({
+          x: sx, y: sy,
+          phase: Math.random() * Math.PI * 2,
+          speed: 1.2 + Math.random() * 3.5,
+          size: 3 + Math.random() * 6,
+          brightness: 0
+        });
+      }
+      if (!sparkleRAF) animateSparkles();
+    }
+
+    function animateSparkles() {
+      if (goldGone) {
+        ctxSp.clearRect(0, 0, SZ, SZ);
+        sparkleRAF = null;
+        return;
+      }
+
+      ctxSp.clearRect(0, 0, SZ, SZ);
+
+      // Read scratch canvas to know which pixels are still gold
+      const scratchData = ctxS.getImageData(0, 0, SZ, SZ).data;
+      const now = performance.now() / 1000;
+
+      sparkles.forEach(sp => {
+        const px = Math.floor(sp.x);
+        const py = Math.floor(sp.y);
+        // Skip if outside heart or already scratched
+        if (origAlpha[py * SZ + px] < 8) return;
+        if (scratchData[(py * SZ + px) * 4 + 3] < 30) return;
+
+        sp.brightness = Math.max(0, Math.sin(now * sp.speed + sp.phase));
+        if (sp.brightness < 0.25) return;
+
+        const a = sp.brightness;
+        const s = sp.size * (0.4 + a * 0.6);
+
+        ctxSp.save();
+        ctxSp.globalAlpha = a * 0.92;
+        ctxSp.strokeStyle = '#FFFDE8';
+        ctxSp.lineCap = 'round';
+
+        // 4-point star cross
+        ctxSp.lineWidth = 1;
+        ctxSp.beginPath(); ctxSp.moveTo(sp.x - s, sp.y); ctxSp.lineTo(sp.x + s, sp.y); ctxSp.stroke();
+        ctxSp.beginPath(); ctxSp.moveTo(sp.x, sp.y - s); ctxSp.lineTo(sp.x, sp.y + s); ctxSp.stroke();
+
+        // Diagonal arms (smaller)
+        const ds = s * 0.5;
+        ctxSp.lineWidth = 0.6;
+        ctxSp.beginPath(); ctxSp.moveTo(sp.x - ds, sp.y - ds); ctxSp.lineTo(sp.x + ds, sp.y + ds); ctxSp.stroke();
+        ctxSp.beginPath(); ctxSp.moveTo(sp.x + ds, sp.y - ds); ctxSp.lineTo(sp.x - ds, sp.y + ds); ctxSp.stroke();
+
+        // Bright center glow
+        ctxSp.globalAlpha = a;
+        const glow = ctxSp.createRadialGradient(sp.x, sp.y, 0, sp.x, sp.y, s * 0.4);
+        glow.addColorStop(0, 'rgba(255,255,240,0.9)');
+        glow.addColorStop(1, 'rgba(255,255,240,0)');
+        ctxSp.fillStyle = glow;
+        ctxSp.beginPath(); ctxSp.arc(sp.x, sp.y, s * 0.4, 0, Math.PI * 2); ctxSp.fill();
+
+        ctxSp.restore();
+      });
+
+      sparkleRAF = requestAnimationFrame(animateSparkles);
+    }
+
+    /* ── Glitter particles (spill on scratch + confetti rain on reveal) ── */
+    const particles = [];
+
+    class GlitterParticle {
+      constructor(x, y, vx, vy, opts) {
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.life     = opts.life     || 1;
+        this.decay    = opts.decay    || (0.01 + Math.random() * 0.015);
+        this.size     = opts.size     || (2.5 + Math.random() * 4.5);
+        this.gravity  = opts.gravity  || (0.06 + Math.random() * 0.05);
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotSpeed = (Math.random() - 0.5) * 0.12;
+        this.wobble   = opts.wobble   || 0;
+        this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+        this.wobblePhase = Math.random() * Math.PI * 2;
+        this.t = 0;
+        const g = Math.floor(175 + Math.random() * 80);
+        const b = Math.floor(10 + Math.random() * 60);
+        this.color = `${255},${g},${b}`;
+        this.type = Math.random() > 0.75 ? 'sparkle' : 'square';
+      }
+      update() {
+        this.t++;
+        this.x  += this.vx;
+        this.y  += this.vy;
+        this.vy += this.gravity;
+        this.vx *= 0.99;
+        if (this.wobble) {
+          this.x += Math.sin(this.wobblePhase + this.t * this.wobbleSpeed) * this.wobble;
+        }
+        this.life -= this.decay;
+        this.rotation += this.rotSpeed;
+      }
+      draw(ctx) {
+        if (this.life <= 0) return;
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+        ctx.globalAlpha = Math.min(this.life, 1);
+        if (this.type === 'sparkle') {
+          ctx.strokeStyle = `rgba(${this.color},1)`;
+          ctx.lineWidth = 0.7;
+          const s = this.size;
+          ctx.beginPath(); ctx.moveTo(-s, 0); ctx.lineTo(s, 0); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0, -s); ctx.lineTo(0, s); ctx.stroke();
+        } else {
+          ctx.fillStyle = `rgba(${this.color},1)`;
+          const h = this.size / 2;
+          ctx.fillRect(-h, -h, this.size, this.size);
+        }
+        ctx.restore();
+      }
+    }
+
+    function emitScratchGlitter(canvasX, canvasY) {
+      const rect = cS.getBoundingClientRect();
+      const sx = rect.left + (canvasX / SZ) * rect.width;
+      const sy = rect.top  + (canvasY / SZ) * rect.height;
+      const count = 4 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < count; i++) {
+        const a = Math.random() * Math.PI * 2;
+        const spd = 1.5 + Math.random() * 3.5;
+        particles.push(new GlitterParticle(
+          sx + (Math.random() - 0.5) * 6,
+          sy + (Math.random() - 0.5) * 6,
+          Math.cos(a) * spd,
+          Math.sin(a) * spd - 1.2,
+          { size: 2 + Math.random() * 3.5 }
+        ));
+      }
+    }
+
+    let confettiActive = false;
+    let confettiInterval = null;
+
+    function startConfettiRain() {
+      if (confettiActive) return;
+      confettiActive = true;
+      const hz = document.getElementById('hz');
+
+      function spawnWave() {
+        const rect = hz.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const spread = rect.width * 1.6;
+        for (let i = 0; i < 6; i++) {
+          const sx = cx + (Math.random() - 0.5) * spread;
+          const sy = -10 - Math.random() * 30;
+          particles.push(new GlitterParticle(
+            sx, sy, (Math.random() - 0.5) * 0.8, 0.5 + Math.random() * 1.5,
+            {
+              size: 3 + Math.random() * 5,
+              gravity: 0.02 + Math.random() * 0.03,
+              decay: 0.003 + Math.random() * 0.004,
+              wobble: 0.6 + Math.random() * 1,
+              life: 1.2
+            }
+          ));
+        }
+        ensureParticleLoop();
+      }
+
+      spawnWave();
+      confettiInterval = setInterval(spawnWave, 180);
+      setTimeout(() => {
+        clearInterval(confettiInterval);
+        confettiActive = false;
+      }, 5000);
+    }
+
+    let particleLoop = false;
+
+    function animateParticles() {
+      ctxP.clearRect(0, 0, cP.width, cP.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        particles[i].update();
+        particles[i].draw(ctxP);
+        if (particles[i].life <= 0 || particles[i].y > cP.height + 20) {
+          particles.splice(i, 1);
+        }
+      }
+      if (particles.length > 0 || confettiActive) {
+        requestAnimationFrame(animateParticles);
+      } else {
+        particleLoop = false;
+      }
+    }
+
+    function ensureParticleLoop() {
+      if (!particleLoop) {
+        particleLoop = true;
+        requestAnimationFrame(animateParticles);
+      }
+    }
+
+    /* ── Scratch engine ── */
+    let down = false, lx = 0, ly = 0, revealed = false, scratchStarted = false;
+    let emitCounter = 0;
+    let goldGone = false;
+    let redFillAmount = 0;
+
+    function getXY(e) {
+      const r   = cS.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : e;
+      return {
+        x: (src.clientX - r.left) * (SZ / r.width),
+        y: (src.clientY - r.top)  * (SZ / r.height)
+      };
+    }
+
+    function paintRed(x, y) {
+      const R = BRUSH * 1.3;
+      const grad = ctxR.createRadialGradient(x, y, 0, x, y, R);
+      grad.addColorStop(0, 'rgba(155,28,38,1)');
+      grad.addColorStop(0.5, 'rgba(155,28,38,0.85)');
+      grad.addColorStop(1, 'rgba(155,28,38,0)');
+      ctxR.fillStyle = grad;
+      ctxR.beginPath();
+      ctxR.arc(x, y, R, 0, Math.PI * 2);
+      ctxR.fill();
+
+      if (lx && ly) {
+        ctxR.lineWidth = R * 1.4;
+        ctxR.lineCap = 'round';
+        ctxR.strokeStyle = 'rgba(155,28,38,0.9)';
+        ctxR.beginPath();
+        ctxR.moveTo(lx, ly);
+        ctxR.lineTo(x, y);
+        ctxR.stroke();
+      }
+
+      updateTextColor();
+    }
+
+    function updateTextColor() {
+      const d = ctxR.getImageData(0, 0, SZ, SZ).data;
+      let filled = 0;
+      for (let i = 0; i < SZ * SZ; i += 8) {
+        if (origAlpha[i] > 8 && d[i * 4 + 3] > 120) filled++;
+      }
+      redFillAmount = (filled * 8) / heartPxCount;
+      const t = Math.min(redFillAmount / 0.5, 1);
+      const dateEl = document.getElementById('dateText');
+      dateEl.querySelectorAll('span').forEach(sp => {
+        const r = Math.round(120 + t * (255 - 120));
+        const g = Math.round(100 + t * (255 - 100));
+        const b = Math.round(100 + t * (255 - 100));
+        const a = (0.55 + t * 0.45).toFixed(2);
+        sp.style.color = `rgba(${r},${g},${b},${a})`;
+      });
+    }
+
+    function doScratch({ x, y }) {
+      if (!scratchStarted) {
+        scratchStarted = true;
+        gsap.to('#hint', { opacity: 0, height: 0, marginTop: 0, duration: 0.35 });
+      }
+
+      if (goldGone) {
+        paintRed(x, y);
+        lx = x; ly = y;
+        return;
+      }
+
+      ctxS.globalCompositeOperation = 'destination-out';
+      const grad = ctxS.createRadialGradient(x, y, 0, x, y, BRUSH);
+      grad.addColorStop(0, 'rgba(0,0,0,1)');
+      grad.addColorStop(0.65, 'rgba(0,0,0,0.85)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.05)');
+      ctxS.fillStyle = grad;
+      ctxS.beginPath();
+      ctxS.arc(x, y, BRUSH, 0, Math.PI * 2);
+      ctxS.fill();
+
+      if (lx && ly) {
+        ctxS.lineWidth = BRUSH * 1.5;
+        ctxS.lineCap   = 'round';
+        ctxS.strokeStyle = 'rgba(0,0,0,0.9)';
+        ctxS.beginPath();
+        ctxS.moveTo(lx, ly);
+        ctxS.lineTo(x, y);
+        ctxS.stroke();
+      }
+      ctxS.globalCompositeOperation = 'source-over';
+
+      emitCounter++;
+      if (emitCounter % 2 === 0) {
+        emitScratchGlitter(x, y);
+        ensureParticleLoop();
+      }
+
+      lx = x; ly = y;
+    }
+
+    let lastChk = 0;
+    function checkRev() {
+      if (goldGone || !origAlpha || Date.now() - lastChk < 200) return;
+      lastChk = Date.now();
+      const d = ctxS.getImageData(0, 0, SZ, SZ).data;
+      let cleared = 0;
+      for (let i = 0; i < SZ * SZ; i += 4) {
+        if (origAlpha[i] > 8 && d[i * 4 + 3] < 8) cleared++;
+      }
+      const pct = (cleared * 4) / heartPxCount;
+      if (!revealed && pct > THRESHOLD) triggerReveal();
+      if (pct > 0.95) {
+        goldGone = true;
+        if (sparkleRAF) { cancelAnimationFrame(sparkleRAF); sparkleRAF = null; }
+        ctxS.clearRect(0, 0, SZ, SZ);
+        cS.style.pointerEvents = 'none';
+        document.getElementById('dateText').style.zIndex = '2';
+      }
+    }
+
+    /* ── Reveal (triggered when enough gold is scratched — no auto-clear) ── */
+    function triggerReveal() {
+      if (revealed) return;
+      revealed = true;
+
+      const btn = document.getElementById('calBtn');
+      btn.style.display = 'block';
+      gsap.fromTo(btn,
+        { opacity: 0, y: 20 },
+        { opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }
+      );
+
+      // Gold confetti rain
+      setTimeout(startConfettiRain, 300);
+    }
+
+    /* ── Events (on the canvas-wrap so it works for both gold and red phases) ── */
+    const wrap = cS.parentElement;
+
+    function getXYFromWrap(e) {
+      const r   = wrap.getBoundingClientRect();
+      const src = e.touches ? e.touches[0] : e;
+      return {
+        x: (src.clientX - r.left) * (SZ / r.width),
+        y: (src.clientY - r.top)  * (SZ / r.height)
+      };
+    }
+
+    wrap.addEventListener('mousedown', e => {
+      down = true;
+      const p = getXYFromWrap(e); lx = p.x; ly = p.y;
+      doScratch(p); checkRev();
+    });
+    wrap.addEventListener('mousemove', e => {
+      if (!down) return;
+      doScratch(getXYFromWrap(e)); checkRev();
+    });
+    document.addEventListener('mouseup', () => { down = false; lx = ly = 0; });
+
+    wrap.addEventListener('touchstart', e => {
+      e.preventDefault(); down = true;
+      const p = getXYFromWrap(e); lx = p.x; ly = p.y;
+      doScratch(p); checkRev();
+    }, { passive: false });
+    wrap.addEventListener('touchmove', e => {
+      e.preventDefault();
+      if (!down) return;
+      doScratch(getXYFromWrap(e)); checkRev();
+    }, { passive: false });
+    document.addEventListener('touchend', () => { down = false; lx = ly = 0; });
+
+    document.getElementById('calBtn').addEventListener('click', () => {
+      document.getElementById('mBg').classList.add('open');
+      setTimeout(() => document.getElementById('mBox').classList.add('open'), 12);
+    });
+
+    /* ── Calendar ── */
+    window.closeM = function() {
+      document.getElementById('mBox').classList.remove('open');
+      setTimeout(() => document.getElementById('mBg').classList.remove('open'), 330);
+    };
+    window.gcal = function() {
+      window.open(
+        'https://calendar.google.com/calendar/render?action=TEMPLATE'
+        + '&text=Dhwani+%26+Rajat+Wedding'
+        + '&dates=20261128%2F20261129'
+        + '&details=Save+the+Date+%E2%9C%A6+28+November+2026',
+        '_blank'
+      ); closeM();
+    };
+    window.dlIcs = function() {
+      const lines = [
+        'BEGIN:VCALENDAR','VERSION:2.0',
+        'PRODID:-//Dhwani & Rajat//Wedding//EN',
+        'BEGIN:VEVENT','DTSTART;VALUE=DATE:20261128',
+        'DTEND;VALUE=DATE:20261129',
+        'SUMMARY:Dhwani & Rajat - Wedding Day',
+        'DESCRIPTION:Save the Date - 28 November 2026.',
+        'END:VEVENT','END:VCALENDAR'
+      ];
+      const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar' });
+      const a = Object.assign(document.createElement('a'), {
+        href: URL.createObjectURL(blob), download: 'dhwani-rajat-28-11-2026.ics'
+      });
+      a.click(); URL.revokeObjectURL(a.href); closeM();
+    };
+
+    /* ── GSAP entrance ── */
+    function entrance() {
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      tl
+        .to('#sl', { opacity: 1, y: 0, duration: 1 })
+        .to('#hz', { opacity: 1, scale: 1, duration: 0.9, ease: 'power2.out' }, '-=0.4')
+        .to('#nm', { opacity: 1, y: 0, duration: 0.9 }, '-=0.4')
+        .to('#hint', { opacity: 1, duration: 0.7 }, '-=0.3');
+    }
+
+    gsap.set('#sl',   { opacity: 0, y: -12 });
+    gsap.set('#hz',   { opacity: 0, scale: 0.92 });
+    gsap.set('#nm',   { opacity: 0, y: 10 });
+    gsap.set('#hint', { opacity: 0 });
+
+    function makePetals() {
+      const c = document.getElementById('petals');
+      for (let i = 0; i < 14; i++) {
+        const el = document.createElement('div');
+        el.className = 'petal';
+        const h = 338 + Math.random() * 28;
+        const s = 6 + Math.random() * 6;
+        el.style.cssText = [
+          `left:${Math.random() * 100}%`,
+          `width:${s}px`, `height:${s * 1.3}px`,
+          `background:radial-gradient(ellipse at 35% 30%,hsl(${h},100%,89%),hsl(${h - 8},64%,72%))`,
+          `animation-duration:${10 + Math.random() * 10}s`,
+          `animation-delay:${-Math.random() * 14}s`,
+          `transform:rotate(${Math.random() * 360}deg)`
+        ].join(';');
+        c.appendChild(el);
+      }
+    }
+
+    generateGlitterTexture();
+    makePetals();
+
+    Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 1500))]).then(() => {
+      drawBase();
+      drawGold();
+      setTimeout(entrance, 150);
+    });
+
+  })();
+  </script>
+</body>
+</html>
