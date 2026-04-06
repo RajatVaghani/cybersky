@@ -17,10 +17,27 @@ import './App.css'
 
 const products = [
   {
+    name: 'Claw HQ',
+    description: "Deploy specialized AI agents in 30 seconds. They write, code, research, and run your business 24/7. No coding required.",
+    platforms: ['web'],
+    logo: '/clawhq.png',
+    links: {
+      website: 'https://openclawhq.app'
+    }
+  },
+  {
+    name: 'Vision',
+    description: "Mac menu bar app that tracks your AI spend across 9 providers in real-time. One-time purchase, no subscription.",
+    platforms: ['mac'],
+    logo: '/vision.png',
+    links: {
+      mac: 'https://openclawhq.app/vision'
+    }
+  },
+  {
     name: 'Doodle Duel',
     description: "The ultimate AI-powered drawing game. Challenge friends, doodle fast, and let AI judge your artistic skills in real-time battles.",
     platforms: ['web'],
-    featured: true,
     logo: '/doodleduel.png',
     links: {
       website: 'https://doodleduel.ai'
@@ -30,7 +47,6 @@ const products = [
     name: 'FlickPicker',
     description: "Find perfect movies and shows. Get personalized recommendations or create watch parties with friends.",
     platforms: ['web'],
-    featured: true,
     logo: '/flickpicker.png',
     links: {
       website: 'https://theflickpicker.com'
