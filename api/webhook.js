@@ -46,7 +46,10 @@ export default async function handler(request) {
 }
 
 function resolveDestination(payload) {
-  const productId = payload.data?.product_id;
+  const data = payload.data || {};
+  const productId = data.product_cart?.[0]?.product_id
+    || data.product_id
+    || data.items?.[0]?.product_id;
 
   if (productId && DOODLEDUEL_PRODUCTS.has(productId)) {
     return DOODLEDUEL_URL;
