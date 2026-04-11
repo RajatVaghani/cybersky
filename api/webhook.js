@@ -4,10 +4,16 @@ export const config = { runtime: 'edge' };
 
 const OPENCLAW_URL = 'https://openclawhq.app/api/billing/webhook';
 const DOODLEDUEL_URL = 'https://doodleduel.ai/api/dodo/webhook';
+const BEEP_URL = 'https://trybeep.app/api/webhooks/dodo';
 
 const DOODLEDUEL_PRODUCTS = new Set([
   'pdt_0NcQgJ6cnG2Pax8bi8qNF', // DoodleDuel Lifetime Pro
   'pdt_0NcQiC5Gb2G56VZwr78O6', // DoodleDuel Arcade Lives
+]);
+
+const BEEP_PRODUCTS = new Set([
+  'pdt_0NcQerK2z4uHMpsJmt2hU', // Beep Pro Monthly
+  'pdt_0NcQgFgSWdGyPWbC1vkyg', // Beep Pro Yearly
 ]);
 
 const MAX_RETRIES = 3;
@@ -61,6 +67,10 @@ function resolveDestination(payload) {
 
   if (productId && DOODLEDUEL_PRODUCTS.has(productId)) {
     return DOODLEDUEL_URL;
+  }
+
+  if (productId && BEEP_PRODUCTS.has(productId)) {
+    return BEEP_URL;
   }
 
   return OPENCLAW_URL;
