@@ -24,10 +24,18 @@ export default async function handler(request) {
   try {
     payload = JSON.parse(rawBody);
   } catch {
+    console.error('[webhook-proxy] Invalid JSON body');
     return new Response('Invalid JSON', { status: 400 });
   }
 
+  const data = payload.data || {};
+  const productId = data.product_cart?.[0]?.product_id
+    || data.product_id
+    || data.items?.[0]?.product_id;
+
   const destination = resolveDestination(payload);
+
+  console.log(`[webhook-proxy] Received: ${payload.type} | product: ${productId || 'none'} | customer: ${data.customer?.email || 'unknown'} | dest: ${destination}`);
 
   const forwardHeaders = {
     'content-type': request.headers.get('content-type') || 'application/json',
@@ -64,13 +72,14 @@ async function forwardWithRetry(url, body, headers, payload) {
   for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
     try {
       const res = await fetch(url, { method: 'POST', headers, body });
+      const resBody = await res.text().catch(() => '');
       if (res.ok) {
-        console.log(`[webhook-proxy] ${label} (${res.status})`);
+        console.log(`[webhook-proxy] OK ${label} (${res.status}) ${resBody}`);
         return;
       }
-      console.error(`[webhook-proxy] ${label} failed (${res.status})`);
+      console.error(`[webhook-proxy] FAIL ${label} attempt=${attempt + 1} status=${res.status} body=${resBody}`);
     } catch (err) {
-      console.error(`[webhook-proxy] ${label} error: ${err.message}`);
+      console.error(`[webhook-proxy] ERROR ${label} attempt=${attempt + 1} ${err.message}`);
     }
 
     if (attempt < MAX_RETRIES) {
@@ -78,5 +87,5 @@ async function forwardWithRetry(url, body, headers, payload) {
     }
   }
 
-  console.error(`[webhook-proxy] ${label} retries exhausted`);
+  console.error(`[webhook-proxy] EXHAUSTED ${label} -- all ${MAX_RETRIES + 1} attempts failed`);
 }
