@@ -14,6 +14,11 @@ import {
   ChevronDown
 } from 'lucide-react'
 import './App.css'
+import {
+  trackProductClick,
+  trackContactClick,
+  trackNavClick,
+} from './lib/analytics'
 
 const products = [
   {
@@ -203,6 +208,11 @@ function ProductCard({ product, index }) {
               className="product-link"
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackProductClick({
+                product: product.name,
+                platform,
+                href,
+              })}
             >
               <PlatformIcon platform={platform} size={14} />
               {platform === 'web' ? 'Visit' : 'Download'}
@@ -229,7 +239,11 @@ function App() {
             <img src="/cybersky-globe-white.png" alt="Cyber Sky" className="logo-img" />
             <span>Cyber Sky</span>
           </div>
-          <a href="#contact" className="nav-cta">
+          <a
+            href="#contact"
+            className="nav-cta"
+            onClick={() => trackNavClick('contact')}
+          >
             Contact
             <ArrowRight size={14} />
           </a>
@@ -286,6 +300,7 @@ function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
+            onClick={() => trackNavClick('products')}
           >
             <span>View Portfolio</span>
             <motion.div
@@ -331,15 +346,31 @@ function App() {
           <p>We respond within 24 hours, even on weekends.</p>
           
           <div className="social-links">
-            <a href="https://twitter.com/Rajat_Vaghani" target="_blank" rel="noopener noreferrer" className="social-link">
+            <a
+              href="https://twitter.com/Rajat_Vaghani"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-link"
+              onClick={() => trackContactClick('twitter')}
+            >
               <Twitter size={18} />
               <span>Twitter</span>
             </a>
-            <a href="https://www.linkedin.com/in/rajatvaghani" target="_blank" rel="noopener noreferrer" className="social-link">
+            <a
+              href="https://www.linkedin.com/in/rajatvaghani"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="social-link"
+              onClick={() => trackContactClick('linkedin')}
+            >
               <Linkedin size={18} />
               <span>LinkedIn</span>
             </a>
-            <a href="mailto:rajat@thecybersky.com" className="social-link">
+            <a
+              href="mailto:rajat@thecybersky.com"
+              className="social-link"
+              onClick={() => trackContactClick('email')}
+            >
               <Mail size={18} />
               <span>Email</span>
             </a>

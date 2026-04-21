@@ -36,6 +36,20 @@
     
     <!-- Theme Color -->
     <meta name="theme-color" content="#ffffff" />
+
+    <!-- Privacy-friendly analytics by Plausible (self-hosted) -->
+    <script defer src="https://analytics.thecybersky.com/js/pa-iT3QBteHjbgesHAmjx783.js"></script>
+    <script>
+      window.plausible = window.plausible || function () {
+        (plausible.q = plausible.q || []).push(arguments)
+      };
+      plausible.init = plausible.init || function (i) { plausible.o = i || {} };
+      plausible.init({
+        outboundLinks: true,
+        fileDownloads: true,
+        taggedEvents: true
+      });
+    </script>
   </head>
   <body>
     <div id="root"></div>
