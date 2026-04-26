@@ -15,6 +15,8 @@ Dodo Payments
       |
       |--- product matches Beep? -------> https://trybeep.app/api/webhooks/dodo
       |
+      |--- product matches Snap Site? --> https://api.snapsiteux.com/api/webhooks/dodo
+      |
       |--- everything else (default) ----> https://openclawhq.app/api/billing/webhook
 ```
 
@@ -58,6 +60,18 @@ interval applied based on `payment_frequency_interval` in the payload.
 
 Update the `BEEP_PRODUCTS` set in `api/webhook.js` once the products
 exist in the Dodo dashboard, and push.
+
+### Snap Site products (route to api.snapsiteux.com)
+
+| Product | ID | Type |
+|---|---|---|
+| Pro Monthly | `pdt_0NdWMEtKlhUlBRiqW8jYP` | Subscription |
+| Pro Yearly | `pdt_0NdWMMip0aPu0IuyY5zVs` | Subscription |
+| Agency Monthly | `pdt_0NdWMInWWmyefqJElPo1f` | Subscription |
+| Agency Yearly | `pdt_0NdWMQzQobFQHEsHCoQSE` | Subscription |
+| 50 Credit Top-up | `pdt_0NdWMY8DsIVNQoNuv0Srd` | One-time payment |
+| 150 Credit Top-up | `pdt_0NdWMg7xPzmURjvnrgyqh` | One-time payment |
+| 500 Credit Top-up | `pdt_0NdWMmr1fYPUnD1lpxlN9` | One-time payment |
 
 ### OpenClaw products (route to openclawhq.app)
 
