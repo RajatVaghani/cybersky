@@ -17,6 +17,8 @@ Dodo Payments
       |
       |--- product matches Snap Site? --> https://api.snapsiteux.com/api/webhooks/dodo
       |
+      |--- product matches EasyQuery? --> https://easyquery.app/api/dodo-webhook
+      |
       |--- everything else (default) ----> https://openclawhq.app/api/billing/webhook
 ```
 
@@ -72,6 +74,13 @@ exist in the Dodo dashboard, and push.
 | 50 Credit Top-up | `pdt_0NdWMY8DsIVNQoNuv0Srd` | One-time payment |
 | 150 Credit Top-up | `pdt_0NdWMg7xPzmURjvnrgyqh` | One-time payment |
 | 500 Credit Top-up | `pdt_0NdWMmr1fYPUnD1lpxlN9` | One-time payment |
+
+### EasyQuery products (route to easyquery.app)
+
+| Product | ID | Type |
+|---|---|---|
+| Pro Monthly | `pdt_0NeFaCZUAB4QxnZuaYdx8` | Subscription |
+| Pro Yearly | `pdt_0NeFaGzlq4qog1hmSSpj6` | Subscription |
 
 ### OpenClaw products (route to openclawhq.app)
 

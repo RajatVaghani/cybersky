@@ -6,6 +6,7 @@ const OPENCLAW_URL = 'https://openclawhq.app/api/billing/webhook';
 const DOODLEDUEL_URL = 'https://doodleduel.ai/api/dodo/webhook';
 const BEEP_URL = 'https://trybeep.app/api/webhooks/dodo';
 const SNAPSITE_URL = 'https://api.snapsiteux.com/api/webhooks/dodo';
+const EASYQUERY_URL = 'https://easyquery.app/api/dodo-webhook';
 
 const DOODLEDUEL_PRODUCTS = new Set([
   'pdt_0NcQgJ6cnG2Pax8bi8qNF', // DoodleDuel Lifetime Pro
@@ -25,6 +26,11 @@ const SNAPSITE_PRODUCTS = new Set([
   'pdt_0NdWMY8DsIVNQoNuv0Srd', // Snap Site 50 Credit Top-up
   'pdt_0NdWMg7xPzmURjvnrgyqh', // Snap Site 150 Credit Top-up
   'pdt_0NdWMmr1fYPUnD1lpxlN9', // Snap Site 500 Credit Top-up
+]);
+
+const EASYQUERY_PRODUCTS = new Set([
+  'pdt_0NeFaCZUAB4QxnZuaYdx8', // EasyQuery Pro Monthly
+  'pdt_0NeFaGzlq4qog1hmSSpj6', // EasyQuery Pro Yearly
 ]);
 
 const MAX_RETRIES = 3;
@@ -86,6 +92,10 @@ function resolveDestination(payload) {
 
   if (productId && SNAPSITE_PRODUCTS.has(productId)) {
     return SNAPSITE_URL;
+  }
+
+  if (productId && EASYQUERY_PRODUCTS.has(productId)) {
+    return EASYQUERY_URL;
   }
 
   return OPENCLAW_URL;
